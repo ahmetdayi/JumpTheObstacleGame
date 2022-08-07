@@ -13,8 +13,12 @@ public class PlayerController : MonoBehaviour
     public bool isGround = true;
     public bool isGameOver = false;
     private Animator playerAnim;
+    public ParticleSystem explosionParticle;
+    public ParticleSystem splatterParticle;
+    public AudioSource voiceSource;
+    public AudioClip[] voiceClip;
 
-   
+
     void Start()
     {
         playerAnim = GetComponent<Animator>();
@@ -38,7 +42,9 @@ public class PlayerController : MonoBehaviour
             _playerRgbd.AddForce(Vector3.up*(jumpForce),ForceMode.Impulse);
             isGround = false;
             playerAnim.SetTrigger("Jump_trig");
-            
+            splatterParticle.Stop();
+            voiceSource.PlayOneShot(voiceClip[0]);
+
         }
     }
 
@@ -47,12 +53,17 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGround = true;
+            splatterParticle.Play();
+            
         }else if (collision.gameObject.CompareTag("Obstacle"))
         {
             isGameOver = true;
             playerAnim.SetBool("Death_b",true);
             playerAnim.SetInteger("DeathType_int",1);
             Debug.Log("gameover");
+            explosionParticle.Play();
+            splatterParticle.Stop();
+            voiceSource.PlayOneShot(voiceClip[1]);
         }
     }
 }
